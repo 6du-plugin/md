@@ -13,6 +13,7 @@ FILE_LI = []
 
 module.exports = {
   end : (dir)!~>
+    FILE_LI.sort()
     console.log dir, FILE_LI
   file : (buf)~>
     filepath = buf.path
@@ -50,10 +51,10 @@ module.exports = {
       ptxt = head+'\n'+meta+"\n"
       buf = Buffer.from(ptxt+atxt)
       line = [
-        parseInt(new Date(date)/1000).toString(36)
+        parseInt new Date(date)/1000
         crypto.createHash('sha256').update(buf).digest('base64').slice(0,-1)
         filepath
-      ].join ' '
+      ]
       FILE_LI.push(line)
       return buf
     return buf
