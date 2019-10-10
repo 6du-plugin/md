@@ -1,2 +1,2 @@
-module.exports = !~>
-  console.log 1
+module.exports = (buf)!~>
+  console.log buf.toString(\utf-8)
