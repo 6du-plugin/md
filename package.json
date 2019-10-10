@@ -6,6 +6,5 @@
   "author": "Tq-Lj <6du@protonmail.com>",
   "license": "MIT",
   "dependencies": {
-    "dayjs": "^1.8.16"
   }
 }
