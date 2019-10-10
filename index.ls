@@ -1,5 +1,6 @@
 require! <[
   crypto
+  path
 ]>
 require! {
   \js-yaml : yaml
@@ -13,8 +14,22 @@ FILE_LI = []
 
 module.exports = {
   end : (dir)!~>
-    FILE_LI.sort()
-    console.log dir, FILE_LI
+    FILE_LI.sort ([a],[b])~>
+      if a < 0 and b > 0
+        return -1
+      if a > 0 and b < 0
+        return 1
+      b - a
+
+    li = []
+    for [time, hash, filepath] in FILE_LI
+      li.push [
+        time.toString(36)
+        hash.digest('base64').slice(0,-1)
+        filepath.slice(3,-3)
+      ].join ' '
+    await fs.writeFile path.join(dir, 'li/index.li'), li.join('\n')
+
   file : (buf)~>
     filepath = buf.path
     buf = buf.toString(\utf-8)
@@ -39,20 +54,25 @@ module.exports = {
       else
         date = meta[日期]
         delete meta[日期]
-      date = date.toISOString().replace('T',' ').split(".")[0]
+
+      if Number.isInteger(date)
+        date-str = date
+      else
+        date-str = date.toISOString().replace('T',' ').split(".")[0]
+        date = parseInt(date/1000)
 
       li = []
       for k,v of meta
         li.push "#k : #v"
       li.sort()
-      li.push "#{日期} : "+date
+      li.push "#{日期} : "+date-str
 
       meta = li.join '\n'
       ptxt = head+'\n'+meta+"\n"
       buf = Buffer.from(ptxt+atxt)
       line = [
-        parseInt new Date(date)/1000
-        crypto.createHash('sha256').update(buf).digest('base64').slice(0,-1)
+        date
+        crypto.createHash('sha256').update(buf)
         filepath
       ]
       FILE_LI.push(line)
