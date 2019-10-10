@@ -1,3 +1,6 @@
+require! <[
+  dayjs  
+]>
 require! {
   \js-yaml : yaml
   \fs-extra : fs
@@ -17,10 +20,28 @@ module.exports = (buf)~>
     spos = ptxt.lastIndexOf('\n---\n')
 
     if spos + 1
+      spos = spos+5
       head = ptxt.slice(0, spos)
-      meta = ptxt.slice(spos+5)
-      meta = yaml.safeLoad meta
-      if not (日期 of meta)
-        console.log meta
-        console.log await fs.stat(filepath)
-  buf
+      meta = ptxt.slice(spos)
+    else
+      head = ""
+      meta = ptxt
+
+    meta = yaml.safeLoad meta
+    if not (日期 of meta)
+      date = (await fs.stat(filepath)).ctime
+    else
+      date = meta[日期]
+      delete meta[日期]
+
+    li = []
+    for k,v of meta
+      li.push "#k : #v"
+    li.sort()
+    li.push "#{日期} : "+date.toISOString().replace('T',' ').split(".")[0]
+
+    meta = li.join '\n'
+    ptxt = head+'\n'+meta+"\n"
+    return ptxt+atxt
+  return buf
+
