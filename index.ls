@@ -1,6 +1,9 @@
 require! {
   \js-yaml : yaml
+  \fs-extra : fs
 }
+
+日期 = '日期'
 
 module.exports = (buf)~>
   filepath = buf.path
@@ -16,5 +19,8 @@ module.exports = (buf)~>
     if spos + 1
       head = ptxt.slice(0, spos)
       meta = ptxt.slice(spos+5)
-      console.log meta, yaml.safeLoad meta
+      meta = yaml.safeLoad meta
+      if not (日期 of meta)
+        console.log meta
+        console.log await fs.stat(filepath)
   buf
