@@ -12,6 +12,13 @@ require! {
 
 FILE_LI = []
 
+trim-end = (txt)~>
+  li = []
+  for i in txt.replace(/\r\n/g,"\n").replace(/\r/g,"\n").split("\n")
+    li.push i.trimEnd!
+  li.join '\n'
+
+
 module.exports = {
   end : (dir)!~>
     FILE_LI.sort ([a],[b])~>
@@ -33,7 +40,7 @@ module.exports = {
   file : (buf)~>
     filepath = buf.path
     buf = buf.toString(\utf-8)
-    buf = buf.replace(/\r\n/g,"\n").replace(/\r/g,"\n")
+    buf = trim-end buf
     pos = buf.indexOf("\n------\n")
     if pos + 1
       ptxt = buf.slice(0,pos)
