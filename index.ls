@@ -15,9 +15,15 @@ FILE_LI = []
 trim-end = (txt)~>
   li = []
   for i in txt.replace(/\r\n/g,"\n").replace(/\r/g,"\n").split("\n")
-    li.push i.trimEnd!
-  li.join '\n'
-
+    i = i.trimEnd!
+    if i or li.length
+      li.push i
+  while li.length
+    if li[li.length-1]
+      break
+    else
+      li.pop()
+  li.join('\n')+"\n"
 
 module.exports = {
   end : (dir)!~>
@@ -52,7 +58,13 @@ module.exports = {
         head = ptxt.slice(0, spos)
         meta = ptxt.slice(spos)
       else
-        head = ""
+        head = []
+        for i in ptxt.split("\n")
+          if i.trim().startsWith "#"
+            head.push(i)
+        head = head.join('\n')
+        if head
+          head += "\n"
         meta = ptxt
 
       meta = (yaml.safeLoad meta) or {}
@@ -76,13 +88,20 @@ module.exports = {
 
       meta = li.join '\n'
       ptxt = head+'\n'+meta+"\n"
-      buf = Buffer.from(ptxt+atxt)
-      line = [
-        date
-        crypto.createHash('sha256').update(buf)
-        filepath
-      ]
-      FILE_LI.push(line)
+      buf = Buffer.from(ptxt+atxt+"\n")
+
+      h1 = false
+      for i in ptxt.split("\n")
+        if i.startsWith "#"
+          h1 = true
+          break
+      if h1
+        line = [
+          date
+          crypto.createHash('sha256').update(buf)
+          filepath
+        ]
+        FILE_LI.push(line)
       return buf
     return buf
 }
