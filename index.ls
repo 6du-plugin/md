@@ -55,7 +55,7 @@ module.exports = {
         head = ""
         meta = ptxt
 
-      meta = yaml.safeLoad meta
+      meta = (yaml.safeLoad meta) or {}
       if not (日期 of meta)
         date = (await fs.stat(filepath)).ctime
       else
