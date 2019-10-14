@@ -41,7 +41,7 @@ module.exports = {
         hash.digest('base64').slice(0,-1)
         filepath.slice(3,-3)
       ].join ' '
-    await fs.writeFile path.join(dir, 'li/index.li'), li.join('\n')
+    await fs.writeFile path.join(dir, 'li.js'), li.join('\n')
 
   file : (buf)~>
     filepath = buf.path
