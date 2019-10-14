@@ -35,13 +35,22 @@ module.exports = {
       b - a
 
     li = []
+
     for [time, hash, filepath] in FILE_LI
-      li.push [
-        time.toString(36)
-        hash.digest('base64').slice(0,-1)
-        filepath.slice(3,-3)
-      ].join ' '
-    await fs.outputFile path.join(dir, 'li/index.js'), li.join('\n')
+      # li.push [
+      #   time.toString(36)
+      # ].join ' '
+
+      name = filepath.slice(0,-3) + "\n"
+
+      len = name.length
+      buf = Buffer.allocUnsafe(6+32+len)
+      buf.writeIntBE time, 0, 6
+      hash.digest!.copy buf, 6
+      buf.write name, 38, len
+      li.push buf
+
+    await fs.outputFile path.join(dir, 'li/index.js'), Buffer.concat(li)
 
   file : (buf)~>
     filepath = buf.path
