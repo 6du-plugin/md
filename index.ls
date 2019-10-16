@@ -89,7 +89,7 @@ module.exports = {
         date-str = date
       else
         date-str = date.toISOString().replace('T',' ').split(".")[0]
-        date = parseInt(date/1000)
+        date = parseInt(date/1000+TIMEZONE)
 
       li = []
       for k,v of meta
