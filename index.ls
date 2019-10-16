@@ -7,6 +7,7 @@ require! {
   \fs-extra : fs
 }
 
+TIMEZONE = new Date().getTimezoneOffset()*60
 
 日期 = '日期'
 
@@ -79,6 +80,7 @@ module.exports = {
       meta = (yaml.safeLoad meta) or {}
       if not (日期 of meta)
         date = (await fs.stat(filepath)).ctime
+        date = new Date(date - TIMEZONE*1000)
       else
         date = meta[日期]
         delete meta[日期]
